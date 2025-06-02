@@ -1,12 +1,11 @@
 from flask import Blueprint, request, jsonify
-from models import db, Book
+from models import db, Book, ReadingAssignment, StudentReading
 from datetime import datetime
-from flask_cors import CORS
+from flask_jwt_extended import jwt_required
 
 books_bp = Blueprint('books', __name__)
 
-CORS(books_bp, origins='*')
-# 🔹 Récupérer tous les livres
+# �� Récupérer tous les livres
 @books_bp.route('/books', methods=['GET'])
 def get_books():
     books = Book.query.all()
@@ -17,16 +16,12 @@ def get_books():
 
 # 🔹 Récupérer un livre par ID
 @books_bp.route('/books/<int:id>', methods=['GET'])
+@jwt_required()
 def get_book(id):
-    book = Book.query.get(id)
+    book = db.session.get(Book, id)
     if not book:
-        return jsonify({'error': 'Book not found'}), 404
-    return jsonify({
-        'id': book.id,
-        'title': book.title,
-        'author': book.author,
-        'published_at': book.published_at.strftime('%Y-%m-%d') if book.published_at else None
-    })
+        return jsonify({'error': 'Livre non trouvé'}), 404
+    return jsonify(book.to_dict())
 
 # 🔹 Ajouter un livre
 @books_bp.route('/books', methods=['POST'])
@@ -50,10 +45,11 @@ def add_book():
 
 # 🔹 Mettre à jour un livre
 @books_bp.route('/books/<int:id>', methods=['PUT'])
+@jwt_required()
 def update_book(id):
-    book = Book.query.get(id)
+    book = db.session.get(Book, id)
     if not book:
-        return jsonify({'error': 'Book not found'}), 404
+        return jsonify({'error': 'Livre non trouvé'}), 404
 
     data = request.get_json()
     if not data:
@@ -74,11 +70,31 @@ def update_book(id):
 
 # 🔹 Supprimer un livre
 @books_bp.route('/books/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_book(id):
-    book = Book.query.get(id)
-    if not book:
-        return jsonify({'error': 'Book not found'}), 404
+    try:
+        book = db.session.get(Book, id)
+        if not book:
+            return jsonify({'error': 'Livre non trouvé'}), 404
 
-    db.session.delete(book)
-    db.session.commit()
-    return jsonify({'message': 'Book deleted successfully'})
+        # Vérifier s'il y a des devoirs associés
+        assignments = ReadingAssignment.query.filter_by(book_id=id).all()
+        if assignments:
+            # Supprimer d'abord les devoirs associés
+            for assignment in assignments:
+                # Supprimer les lectures des étudiants associées à ce devoir
+                StudentReading.query.filter_by(assignment_id=assignment.id).delete()
+                # Supprimer le devoir
+                db.session.delete(assignment)
+            
+            # Commit les suppressions des devoirs
+            db.session.commit()
+
+        # Maintenant on peut supprimer le livre
+        db.session.delete(book)
+        db.session.commit()
+        
+        return jsonify({'message': 'Livre et ses devoirs associés supprimés avec succès'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500

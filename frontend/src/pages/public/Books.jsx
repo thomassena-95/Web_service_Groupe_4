@@ -1,4 +1,4 @@
-import BookList from '../components/BookList/BookList';
+import BookList from '../../components/books/BookList';
 import { useState, useEffect } from 'react';
 
 

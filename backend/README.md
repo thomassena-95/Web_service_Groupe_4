@@ -1,35 +1,52 @@
-# Flask Books API
+# 🚀 Backend - Plateforme de Gestion de Lectures
 
-Ce projet est une API REST simple développée avec Flask pour gérer une collection de livres, utilisant PostgreSQL comme base de données et Docker pour faciliter la gestion des environnements.
+## 📋 Description
+API REST développée avec Flask pour la gestion des lectures, des classes et des résumés d'élèves. Utilise PostgreSQL comme base de données et JWT pour l'authentification.
 
----
+## 🛠️ Technologies utilisées
+- **Flask** : Framework web Python
+- **SQLAlchemy** : ORM pour la gestion de la base de données
+- **PostgreSQL** : Base de données relationnelle
+- **JWT** : Authentification et autorisation
+- **Alembic** : Gestion des migrations
+- **Docker** : Conteneurisation
+- **Pytest** : Tests unitaires
+
+## 📌 Prérequis
+
+### Outils recommandés
+- [Postman](https://www.postman.com/downloads/) pour tester l'API
+- [DBeaver](https://dbeaver.io/download/) pour la base de données
+- [Python](https://www.python.org/downloads/) (v3.8+)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ## 🚀 Installation & Exécution
-
-### 📌 Prérequis
-
-**Recommandations d'outils complémentaires :**
-- [Postman](https://www.postman.com/downloads/) pour tester les endpoints de l'API.
-- [DBeaver](https://dbeaver.io/download/) pour visualiser la base de données.
-
-#### 🖥️ Windows
-- Installer [Python](https://www.python.org/downloads/)
-- Installer [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Installer [Make for Windows (GnuWin32)](http://gnuwin32.sourceforge.net/packages/make.htm) ou utiliser [Chocolatey](https://chocolatey.org/install) : `choco install make`
-- **Ajouter `make` dans le PATH système** pour pouvoir exécuter les commandes `make` dans un terminal (cmd ou PowerShell)
-
-#### 🐧 Linux / 🍏 macOS
-- Vérifier que `python3`, `pip`, `docker`, `docker-compose` et `make` sont installés
 
 ### 🏗️ Installation
 
 #### 1️⃣ Cloner le projet
 ```bash
-git clone git@github.com:esperluet/esme_webservice_flask.git
-cd esme_webservice_flask
+git clone <url-du-repo>
+cd backend
 ```
 
-#### 2️⃣ Construire et démarrer l’application avec Docker
+#### 2️⃣ Configuration de l'environnement
+Créer un fichier `.env` :
+```env
+FLASK_APP=app
+FLASK_ENV=development
+DATABASE_URL=postgresql://myuser:mot_de_passe@db:5432/esme_inge
+JWT_SECRET_KEY=votre_clé_secrète
+```
+
+#### 3. Installation des dépendances
+```bash
+pip install -r requirements.txt
+```
+
+### 🏗️ Installation avec Docker
+
+#### 1️⃣ Construire et démarrer l'application avec Docker
 ```bash
 make docker-build
 ```
@@ -41,7 +58,7 @@ L'API sera accessible sur [http://localhost:5009](http://localhost:5009).
 > make docker-up
 > ```
 
-### 🐳 Pour arrêter l’application
+### 🐳 Pour arrêter l'application
 ```bash
 make docker-down
 ```
@@ -50,77 +67,146 @@ make docker-down
 > 
 > De plus, les fichiers de migration Alembic sont synchronisés avec le dossier local `./migrations/`, ce qui permet de conserver l'historique des migrations et de les versionner dans Git.
 
----
+## 📚 Structure du projet
 
-## 📚 API Endpoints
+## �� API Endpoints
 
-### 🔹 Récupérer tous les livres
+### Authentification
 ```http
-GET /books
+POST /auth/login
+POST /auth/register
+GET /auth/me
 ```
 
-### 🔹 Ajouter un livre
+### Classes
 ```http
-POST /books
-Content-Type: application/json
-
-{
-  "title": "Le Petit Prince",
-  "author": "Antoine de Saint-Exupéry",
-  "published_at": "1943-04-06"
-}
+GET /classrooms
+POST /classrooms
+GET /classrooms/<id>
+PUT /classrooms/<id>
+DELETE /classrooms/<id>
 ```
 
-### 🔹 Récupérer un livre spécifique
+### Lectures
 ```http
-GET /books/<book_id>
+GET /readings
+POST /readings
+GET /readings/<id>
+PUT /readings/<id>
+DELETE /readings/<id>
 ```
 
-### 🔹 Mettre à jour un livre
+### Résumés
 ```http
-PUT /books/<book_id>
-Content-Type: application/json
-
-{
-  "title": "Le Petit Prince (Édition spéciale)",
-  "published_at": "1943-04-07"
-}
+GET /summaries
+POST /summaries
+GET /summaries/<id>
+PUT /summaries/<id>
 ```
 
-### 🔹 Supprimer un livre
-```http
-DELETE /books/<book_id>
+## 🗃️ Modèles de données
+```python
+# User
+class User:
+    id: int
+    email: str
+    role: str  # 'professor' ou 'student'
+    # ...
+
+# Classroom
+class Classroom:
+    id: int
+    name: str
+    professor_id: int
+    # ...
+
+# ReadingAssignment
+class ReadingAssignment:
+    id: int
+    book_id: int
+    classroom_id: int
+    # ...
+
+# StudentReading
+class StudentReading:
+    id: int
+    user_id: int
+    assignment_id: int
+    summary: str
+    status: str
+    # ...
 ```
 
----
+## 🧪 Tests
+```bash
+# Lancer tous les tests
+pytest
 
-## 🛠 Commandes utiles
+# Tests spécifiques
+pytest tests/test_auth.py
+pytest tests/test_classrooms.py
+```
 
-| Commande             | Description                                              |
-|----------------------|----------------------------------------------------------|
-| `make docker-build`  | Construit et démarre les conteneurs Docker               |
-| `make docker-up`     | Démarre les conteneurs existants                         |
-| `make docker-down`   | Arrête et supprime les conteneurs                        |
-| `make docker-clean`  | Nettoie les images Docker inutilisées                    |
-| `make db-init`       | Initialise la base de données (crée les tables)          |
-| `make db-migrate`    | Crée une migration à partir des modifications du modèle  |
-| `make db-upgrade`    | Applique les migrations à la base de données             |
-| `make db-reset`      | Réinitialise complètement la base de données             |
-| `make help`          | Affiche toutes les commandes disponibles                 |
+## 🛠️ Commandes utiles
 
----
+| Commande | Description |
+|----------|-------------|
+| `make docker-build` | Build et démarre les conteneurs |
+| `make docker-up` | Démarre les conteneurs existants |
+| `make docker-down` | Arrête les conteneurs |
+| `make db-init` | Initialise la base de données |
+| `make db-migrate` | Crée une migration |
+| `make db-upgrade` | Applique les migrations |
+| `make db-reset` | Réinitialise la base |
 
-## 🛠 Technologies utilisées
+## 🔒 Sécurité
+- Authentification JWT
+- Hachage des mots de passe
+- Protection CORS
+- Validation des données
+- Gestion des rôles
 
-- **Flask** : Framework web en Python pour la création de l'API REST.
-- **PostgreSQL** : Base de données relationnelle pour le stockage des livres.
-- **Docker & Docker Compose** : Gestion des environnements et conteneurisation.
-- **Makefile** : Automatisation des commandes et simplification des tâches.
+## 📊 Base de données
+- PostgreSQL
+- Migrations avec Alembic
+- Relations bidirectionnelles
+- Contraintes d'intégrité
 
----
+## 🐛 Débogage
+- Logs détaillés
+- Mode debug Flask
+- Tests unitaires
+- Validation des données
+
+## 📝 Documentation
+- Docstrings Python
+- Documentation API
+- Exemples de requêtes
+- Schémas de données
+
+## 🚫 Problèmes courants
+| Problème | Solution |
+|----------|----------|
+| Erreur de connexion DB | Vérifier les variables d'environnement |
+| Erreur CORS | Configurer les origines autorisées |
+| Erreur de migration | Vérifier l'état de la base |
+
+## 🔄 Workflow de développement
+1. Créer une branche
+2. Développer et tester
+3. Créer une migration si nécessaire
+4. Pull request
+5. Code review
+6. Merge
+
+## 📈 Performance
+- Optimisation des requêtes
+- Indexation de la base
+- Mise en cache
+- Pagination des résultats
 
 ## ❗ Conseils supplémentaires pour les utilisateurs Windows
 
-- Si la commande `make` n’est pas reconnue, ajoutez manuellement le dossier contenant `make.exe` à votre variable d’environnement `PATH`.
-- Il est recommandé d’utiliser Git Bash, PowerShell ou WSL pour éviter les problèmes liés aux chemins ou à l'encodage des commandes dans le terminal.
-- En cas d’erreur lors de l’exécution des commandes Makefile, vérifiez que Docker est bien lancé et que les conteneurs sont en cours d’exécution (`make docker-up`).
+- Si la commande `make` n'est pas reconnue, ajoutez manuellement le dossier contenant `make.exe` à votre variable d'environnement `PATH`.
+- Il est recommandé d'utiliser Git Bash, PowerShell ou WSL pour éviter les problèmes liés aux chemins ou à l'encodage des commandes dans le terminal.
+- En cas d'erreur lors de l'exécution des commandes Makefile, vérifiez que Docker est bien lancé et que les conteneurs sont en cours d'exécution (`make docker-up`).

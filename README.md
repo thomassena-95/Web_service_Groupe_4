@@ -1,43 +1,18 @@
-# 📁 Squelette de projet : Flask + React + PostgreSQL
+# 📚 Plateforme de Gestion de Lectures
 
-Ce projet constitue un **squelette de départ** pour construire une application web full-stack à base de :
-
-* **Back-end** : Flask (Python)
-* **Front-end** : React (Vite)
-* **Base de données** : PostgreSQL
-
-Le tout est prêt à être exécuté localement via **Docker** et **Docker Compose**.
-
----
-
-## ✅ Objectif de ce squelette
-
-Ce projet est destiné à servir de base pour votre propre développement.
-
-**Ce que vous devez faire :**
-
-1. **Cloner** ce dépôt
-2. **Lancer l'application localement** (voir ci-dessous)
-3. **Construire votre projet** à partir de cette structure
-
----
+## 📋 Description
+Application web permettant aux professeurs de gérer les lectures assignées aux élèves et aux élèves de soumettre leurs résumés. Développée avec Flask et React.
 
 ## ⚡ Prérequis
 
-Avant de commencer, assurez-vous d'avoir installé les outils suivants :
+* [Docker Desktop](https://www.docker.com/products/docker-desktop)
+* Git
+* Make
+  * Windows : `choco install make`
+  * MacOS : `xcode-select --install`
+  * Linux : `sudo apt install make`
 
-### Pour Windows / MacOS / Linux :
-
-* [Docker Desktop](https://www.docker.com/products/docker-desktop) (inclut Docker + Docker Compose)
-* Git (pour cloner le projet)
-* **Make** (outil pour exécuter des commandes automatisées)
-
-  * Windows : installez via [Chocolatey](https://chocolatey.org/) : `choco install make`
-  * MacOS : inclus avec Xcode : `xcode-select --install`
-  * Linux : `sudo apt install make` (Debian/Ubuntu) ou `sudo dnf install make` (Fedora)
-
-Vous pouvez vérifier leur installation avec :
-
+Vérification des installations :
 ```bash
 docker --version
 docker-compose --version
@@ -45,44 +20,60 @@ git --version
 make --version
 ```
 
----
-
-## 🔄 Installation et exécution locale
+## 🔄 Installation et exécution
 
 ### 1. Cloner le projet
-
 ```bash
 git clone <url-du-repo>
 cd <nom-du-dossier>
 ```
 
-### 2. Lancer l'application (backend, frontend et BDD)
-
+### 2. Lancer l'application
 ```bash
 make docker-build
 ```
-
-ou directement :
-
+ou
 ```bash
 docker-compose up --build
 ```
 
 ### 3. Accéder à l'application
-
 * Frontend : [http://localhost:3000](http://localhost:3000)
 * Backend API : [http://localhost:5009](http://localhost:5009)
 * Base de données PostgreSQL :
-
   * Hôte : `localhost`
   * Port : `5432`
   * Utilisateur : `myuser`
   * Mot de passe : `mot_de_passe`
   * Base : `esme_inge`
 
----
+## 🎯 Fonctionnalités
 
-## 🧠 Structure du projet
+### Interface Professeur
+- Dashboard avec statistiques
+- Gestion des classes
+- Attribution des lectures
+- Validation des résumés
+
+### Interface Élève
+- Liste des lectures assignées
+- Soumission de résumés
+- Historique des résumés
+- Dashboard personnel
+
+## 🛠️ Commandes utiles
+
+```bash
+make docker-build   # Build et démarre tous les services
+make docker-up      # Démarre sans rebuild
+make docker-down    # Stoppe et supprime les conteneurs
+make db-init        # Init migrations (une seule fois)
+make db-migrate     # Crée une nouvelle migration
+make db-upgrade     # Applique les migrations
+make db-reset       # Supprime + recrée la base
+```
+
+## 📊 Structure du projet
 
 ```
 full-app/
@@ -142,3 +133,96 @@ make db-reset       # Supprime + recrée la base
 4. Gérez l'authentification si nécessaire
 
 Bon développement ! 🚀
+
+## 🗃️ Structure de la base de données
+[Insérer le diagramme de la base de données]
+
+## 📝 Documentation API
+[Insérer la documentation de l'API]
+
+## 🧪 Tests
+```bash
+# Backend
+cd backend
+python -m pytest
+
+# Frontend
+cd frontend
+npm test
+```
+
+## 🛠️ Auteur
+[Votre nom]
+
+## 📄 Licence
+[Insérer la licence]
+
+## 🚀 Installation rapide
+
+```bash
+# Cloner le repository
+git clone [URL_DU_REPO]
+
+# Lancer l'application
+docker-compose up --build
+```
+
+## 🔑 Comptes de test
+
+### Professeur
+- Email: prof@test.com
+- Mot de passe: prof123
+- Classe: "Classe Test"
+
+### Élève
+- Email: eleve@test.com
+- Mot de passe: eleve123
+- Livre assigné: "Le Petit Prince"
+
+## 📡 Endpoints principaux
+
+### Authentification
+```http
+POST /auth/login
+POST /auth/register
+GET /auth/me
+```
+
+### Classes
+```http
+GET /classrooms
+POST /classrooms
+GET /classrooms/<id>
+```
+
+### Lectures
+```http
+GET /readings
+POST /readings
+GET /readings/<id>
+```
+
+### Résumés
+```http
+GET /summaries
+POST /summaries
+GET /summaries/<id>
+PUT /summaries/<id>
+```
+
+## 📊 Exemple de workflow
+
+1. **Élève**
+   - Se connecte
+   - Consulte les lectures assignées
+   - Soumet un résumé
+
+2. **Professeur**
+   - Se connecte
+   - Consulte les résumés soumis
+   - Valide ou refuse les résumés
+
+## 🛠️ Technologies utilisées
+- Backend: Flask, PostgreSQL
+- Frontend: React, Material-UI
+- Docker pour le déploiement

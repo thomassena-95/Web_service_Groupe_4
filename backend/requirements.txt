@@ -4,3 +4,7 @@ psycopg2-binary
 python-dotenv
 Flask-Migrate
 Flask-cors
+flask-jwt-extended
+marshmallow
+python-jose
+pytest

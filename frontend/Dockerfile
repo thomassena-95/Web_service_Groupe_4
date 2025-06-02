@@ -1,23 +1,14 @@
 # frontend/Dockerfile
 
-# 1) Build stage
-FROM node:24-alpine AS build
+FROM node:20-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY . .
-RUN npm run build
 
-# 2) Serve stage
-FROM nginx:1.28-alpine
+EXPOSE 3000
 
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
-
-RUN sed -i 's/user  nginx;/user  nobody;/' /etc/nginx/nginx.conf
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "dev"]

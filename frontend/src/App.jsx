@@ -1,16 +1,18 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Home from "./pages/Home"
-import Books from "./pages/Books"
+import { ThemeProvider } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
+import { theme } from './theme';
+import { AuthProvider } from './contexts/AuthContext';
+import { RouterProvider } from './router';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/home" element={<Home />} />
-        <Route path="/books" element={<Books />} />
-      </Routes>
-    </BrowserRouter>
-  )
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <RouterProvider />
+      </AuthProvider>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;

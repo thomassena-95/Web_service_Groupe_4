@@ -38,3 +38,10 @@ postgres_data/
 
 # 👉 OS-specific
 Thumbs.db
+
+# 👉 New additions from the code block
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+build/

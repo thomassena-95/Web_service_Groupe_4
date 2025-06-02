@@ -27,3 +27,16 @@ instance/
 # Système
 .DS_Store
 Thumbs.db
+
+# À la racine du projet
+echo "__pycache__/
+*.pyc
+.env
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.DS_Store
+node_modules/
+build/
+dist/" > .gitignore
